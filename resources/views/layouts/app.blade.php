@@ -17,7 +17,7 @@
     <body>
         @include('commons.navbar')
         
-        <div class="cpntainer">
+        <div class="container">
             @include('commons.error_tasks')
         
             @yield('content')
