@@ -15,11 +15,18 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+        $tasks =  Task::all();
         
-        return view('tasks.index', [
-            'tasks' => $tasks,
-            ]);
+        if (\Auth::check()) {
+            
+            return view('tasks.index',[
+                'tasks' => $tasks,]);
+        }
+        else{
+            return view('welcome');
+        }
+            
+        
     }
 
     /**
@@ -27,7 +34,7 @@ class TasksController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+     public function create()
     {
         $task = new Task;
         
@@ -42,17 +49,20 @@ class TasksController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+     
     public function store(Request $request)
     {
+        $task = new Task;
+        
         $this->validate($request,[
             'content' => 'required|max:191',
             'status' => 'required|max:10',
-            ]);
+        ]);
             
-        $task = new Task;
-        $task->content = $request->content;
-        $task->status = $request->status;
-        $task->save();
+        $request->user()->tasks()->create([
+            'content' => $request->content,
+            'status' => $request->status,
+        ]);
         
         return redirect('/');
     }
@@ -63,6 +73,7 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+     
     public function show($id)
     {
         $task = Task::find($id);
@@ -78,6 +89,7 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+     
     public function edit($id)
     {
         $task = Task::find($id);
@@ -94,6 +106,7 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function update(Request $request, $id)
     {
         $this->validate($request, [
@@ -115,11 +128,14 @@ class TasksController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function destroy($id)
     {
         $task = Task::find($id);
         $task->delete();
         
+        
         return redirect('/');
     }
+   
 }
