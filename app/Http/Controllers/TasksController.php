@@ -15,18 +15,21 @@ class TasksController extends Controller
      */
     public function index()
     {
-        $tasks =  Task::all();
+        $tasks =  Task::where('user_id', \Auth::id())->get();
         
+        
+     
         if (\Auth::check()) {
             
             return view('tasks.index',[
-                'tasks' => $tasks,]);
+                'tasks' => $tasks,
+               
+                ]);
         }
         else{
             return view('welcome');
         }
             
-        
     }
 
     /**
@@ -77,10 +80,19 @@ class TasksController extends Controller
     public function show($id)
     {
         $task = Task::find($id);
+        //print_r($task);exit;
         
+        //Auth::user()->id と $taskのuser_idが一致していたら（if文で分岐）
+       if (\Auth::user()->id == $task->user_id) {
+       
         return view('tasks.show',[
             'task' => $task,
             ]);
+       }
+       else {
+          return redirect ('tasks.index');
+       }
+        //一致していなかったら、タスク一覧ページにリダイレクト
     }
 
     /**
